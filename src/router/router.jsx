@@ -4,6 +4,7 @@ import SignInPage from "@/pages/auth/sign-in";
 import SignUpPage from "@/pages/auth/sign-up";
 import VerifyCodePage from "@/pages/auth/verify-code";
 import NotFound from "@/pages/not-found";
+import ActivityPage from "@/pages/sys/activity";
 import AddNewRoom from "@/pages/sys/add-room";
 import Dashboard from "@/pages/sys/dashboard";
 import EditRoomPage from "@/pages/sys/edit-room";
@@ -46,6 +47,11 @@ const router = createBrowserRouter([
       {
         path: "rooms",
         element: <RoomsPage />,
+        errorElement: <NotFound />,
+      },
+      {
+        path: "activity",
+        element: <ActivityPage />,
         errorElement: <NotFound />,
       },
       {

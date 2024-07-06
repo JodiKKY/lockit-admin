@@ -1,4 +1,4 @@
-import { DoorOpen, LayoutDashboard } from "lucide-react";
+import { Activity, DoorOpen, LayoutDashboard } from "lucide-react";
 
 export const NAVBAR_LINKS = [
   {
@@ -12,5 +12,11 @@ export const NAVBAR_LINKS = [
     title: "Rooms",
     href: "/rooms",
     icon: <DoorOpen />,
+  },
+  {
+    id: 2,
+    title: "Activity",
+    href: "/activity",
+    icon: <Activity />,
   },
 ];
