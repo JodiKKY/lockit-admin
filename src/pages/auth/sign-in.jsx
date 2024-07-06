@@ -54,7 +54,7 @@ function SignInForm() {
           <div className="my-5">
             <h5 className="text-primary">Sign In</h5>
             <p className="text-neutral-500">
-              Enter your credentials to use SecureCourse
+              Enter your credentials to use LockIt Admin
             </p>
           </div>
           {error && (
