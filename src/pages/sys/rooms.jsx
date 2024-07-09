@@ -14,7 +14,7 @@ import { useRooms } from "@/context/rooms-context";
 import Loader from "@/components/ui/loader";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EyeIcon, TrashIcon } from "lucide-react"; // Assuming TrashIcon for delete functionality
+import { EyeIcon, TrashIcon } from "lucide-react";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -50,7 +50,9 @@ function RoomsPage() {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h3>Rooms</h3>
+        <h3 className="text-base font-semibold leading-6 text-gray-900">
+          Rooms
+        </h3>
         <Link to={`/rooms/new`}>
           <Button>Add Room</Button>
         </Link>

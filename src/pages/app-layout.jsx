@@ -12,7 +12,7 @@ import Logo from "../assets/logo.svg";
 
 export default function AppLayout() {
   const route = useLocation();
-  const { currentUser, currentUserDetails, loading } = useAuth();
+  const { currentUser, loading } = useAuth();
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function AppLayout() {
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
           <aside className="fixed inset-y-0 left-0 z-10 hidden w-[220px] lg:w-[18rem] flex-col border-r bg-background sm:flex">
             <nav className="flex flex-col gap-4">
-              <div className="flex items-center gap-2 border-y p-3 h-14">
+              <div className="flex items-center gap-2 border-b p-3 h-14">
                 <img src={Logo} alt="logo" className="w-8 h-8" />
                 <p>LockIt</p>
               </div>
@@ -62,7 +62,10 @@ export default function AppLayout() {
                 </div>
               </div>
               <div className="flex justify-between items-center w-full sm:hidden">
-                SecureCourse
+                <div className="flex items-center gap-2 border-b border-b-primary p-3 h-14">
+                  <img src={Logo} alt="logo" className="w-8 h-8" />
+                  <p>LockIt</p>
+                </div>
                 <div className="flex gap-3 items-center">
                   <div className="flex gap-3 items-center">
                     <div className="border rounded-full p-2 text-sm">
@@ -82,7 +85,10 @@ export default function AppLayout() {
                     </SheetTrigger>
                     <SheetContent side="left">
                       <nav className="grid gap-6 text-lg font-medium">
-                        <div className="w-[40px]">SecureCourse</div>
+                        <div className="flex items-center gap-2 h-14">
+                          <img src={Logo} alt="logo" className="w-8 h-8" />
+                          <p>LockIt</p>
+                        </div>
                         {NAVBAR_LINKS.map((link, index) => {
                           return (
                             <SheetTrigger asChild key={index}>
@@ -91,7 +97,7 @@ export default function AppLayout() {
                                 className={cn(
                                   "text-muted-foreground hover:text-foreground",
                                   {
-                                    "text-foreground":
+                                    "border-l-[5px] border-l-primary bg-neutral-100 p-2 rounded-r-md text-black":
                                       route.pathname === `${link.href}`,
                                   }
                                 )}

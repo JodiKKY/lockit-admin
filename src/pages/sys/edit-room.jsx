@@ -94,10 +94,10 @@ function EditRoomPage() {
 
   return (
     <div className="max-w-lg mx-auto">
-      <h5>Edit Room</h5>
-      <p className="text-neutral-500">
-        Edit room details
-      </p>
+      <h3 className="text-base font-semibold leading-6 text-gray-900">
+        Edit Room Details
+      </h3>
+      <p className="text-neutral-500">Edit room details</p>
       <br />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
