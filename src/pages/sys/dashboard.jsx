@@ -133,7 +133,7 @@ export default function Dashbaord() {
               </dd>
             </div>
           ))}
-          <div className="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6 lg:col-span-2">
+          <div className="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6 lg:col-span-3">
             <h3 className="text-base font-semibold leading-6 text-gray-900">
               Recent Activity
             </h3>

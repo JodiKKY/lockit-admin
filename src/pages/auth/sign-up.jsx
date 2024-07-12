@@ -59,6 +59,7 @@ function SignUpForm() {
       await addDoc(usersRef, {
         name: data.displayName,
         email: data.email,
+        role:"admin",
         uid: userCredential.user.uid,
       });
 

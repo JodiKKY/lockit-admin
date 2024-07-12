@@ -5,25 +5,51 @@ import Loader from "@/components/ui/loader";
 import { useAuth } from "@/context/auth-context";
 import { db } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  serverTimestamp
+} from "firebase/firestore";
 import { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-const formSchema = z.object({
-  roomName: z.string().min(1, {
-    message: "Room name is required.",
-  }),
-  isOccupied: z.boolean().optional(),
-  occupantName: z.string().optional(),
-}).refine((data) => !data.isOccupied || data.occupantName, {
-  message: "Occupant name is required if the room is occupied.",
-  path: ["occupantName"],
-});
+const formSchema = z
+  .object({
+    roomName: z.string().min(1, {
+      message: "Room name is required.",
+    }),
+    isOccupied: z.boolean().optional(),
+    occupantName: z.string().optional(),
+    occupantEmail: z
+      .string()
+      .email({ message: "Invalid email address" })
+      .optional(),
+    startDate: z.date().optional(),
+    endDate: z.date().optional(),
+  })
+  .refine((data) => !data.isOccupied || data.occupantName, {
+    message: "Occupant name is required if the room is occupied.",
+    path: ["occupantName"],
+  })
+  .refine((data) => !data.isOccupied || data.occupantEmail, {
+    message: "Occupant email is required if the room is occupied.",
+    path: ["occupantEmail"],
+  })
+  .refine((data) => !data.isOccupied || data.startDate, {
+    message: "Start date is required if the room is occupied.",
+    path: ["startDate"],
+  })
+  .refine((data) => !data.isOccupied || data.endDate, {
+    message: "End date is required if the room is occupied.",
+    path: ["endDate"],
+  });
 
 function AddNewRoom() {
-  const { currentUserDetails, loading } = useAuth();
+  const { currentUser, currentUserDetails, loading } = useAuth();
   const navigate = useNavigate();
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [error, setError] = useState("");
@@ -39,6 +65,7 @@ function AddNewRoom() {
     resolver: zodResolver(formSchema),
   });
 
+
   const onSubmit = async (data) => {
     setIsSubmittingForm(true);
     setError("");
@@ -47,16 +74,18 @@ function AddNewRoom() {
         name: data.roomName,
         status: data.isOccupied ? "occupied" : "empty",
         occupant_name: data.isOccupied ? data.occupantName : "",
+        start_date: data.startDate || null,
+        end_date: data.endDate || null,
         createdAt: serverTimestamp(),
         createdBy: {
-            name:currentUserDetails.name,
-            email:currentUserDetails.email,
-            uid:currentUserDetails.uid,
+          name: currentUserDetails.name,
+          email: currentUserDetails.email,
+          uid: currentUserDetails.uid,
         },
       };
       const roomRef = collection(db, "rooms");
       await addDoc(roomRef, roomData);
-      reset("")
+      reset("");
       navigate("/rooms");
     } catch (error) {
       console.log(error);
@@ -114,17 +143,78 @@ function AddNewRoom() {
                 />
               </div>
               {watch("isOccupied") && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Occupant Name
-                  </label>
-                  <Input type="text" {...register("occupantName")} />
-                  {errors.occupantName && (
-                    <p className="mt-2 text-sm text-red-600">
-                      {errors.occupantName.message}
-                    </p>
-                  )}
-                </div>
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Occupant Name
+                    </label>
+                    <Input type="text" {...register("occupantName")} />
+                    {errors.occupantName && (
+                      <p className="mt-2 text-sm text-red-600">
+                        {errors.occupantName.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Occupant Email
+                    </label>
+                    <Input type="email" {...register("occupantEmail")} />
+                    {errors.occupantEmail && (
+                      <p className="mt-2 text-sm text-red-600">
+                        {errors.occupantEmail.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <p>This room will be occupied from:</p>
+                    <hr className="mb-3" />
+                    <div className="mb-4">
+                      <div className="w-full mb-4">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Start Date
+                        </label>
+                        <Controller
+                          name="startDate"
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              selected={field.value}
+                              onChange={(date) => field.onChange(date)}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                          )}
+                        />
+                        {errors.startDate && (
+                          <p className="mt-2 text-sm text-red-600">
+                            {errors.startDate.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="w-full mb-4">
+                        <label className="block text-sm font-medium text-gray-700">
+                          End Date
+                        </label>
+                        <Controller
+                          name="endDate"
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              selected={field.value}
+                              onChange={(date) => field.onChange(date)}
+                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                          )}
+                        />
+                        {errors.endDate && (
+                          <p className="mt-2 text-sm text-red-600">
+                            {errors.endDate.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </>
               )}
               <Button
                 type="submit"
