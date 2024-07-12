@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
+import Logo from "../../assets/logo.svg";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -39,7 +40,7 @@ function SignInForm() {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       navigate("/");
     } catch (error) {
-      console.log(error)
+      console.log(error);
       const friendlyMessage = normalizeFirebaseErrorMessage(error.code);
       setError(friendlyMessage);
     } finally {
@@ -52,6 +53,7 @@ function SignInForm() {
       <div className="max-w-lg bg-white px-5 py-8 rounded-xl">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="my-5">
+            <img src={Logo} alt="logo" className="w-8 h-8 mb-2" />
             <h5 className="text-primary">Sign In</h5>
             <p className="text-neutral-500">
               Enter your credentials to use LockIt Admin
