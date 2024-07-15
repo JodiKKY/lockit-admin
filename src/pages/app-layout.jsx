@@ -9,6 +9,7 @@ import { signOut } from "firebase/auth";
 import { Menu } from "lucide-react";
 import { Link, Navigate, Outlet, useLocation } from "react-router-dom";
 import Logo from "../assets/logo.svg";
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function AppLayout() {
   const route = useLocation();
@@ -16,6 +17,7 @@ export default function AppLayout() {
 
   return (
     <>
+          <Toaster />
       {!loading && !currentUser ? (
         <Navigate to={`/sign-in`} />
       ) : (
