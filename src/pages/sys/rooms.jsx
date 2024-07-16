@@ -1,126 +1,123 @@
-import React, { useState } from "react";
+import { AssignRoom } from "@/components/AssignRoom/AssignRoom";
+import { EditRoom } from "@/components/AssignRoom/ViewRoomDetails";
+import Loader from "@/components/ui/loader";
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useRooms } from "@/context/rooms-context";
-import Loader from "@/components/ui/loader";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { EyeIcon, TrashIcon } from "lucide-react";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+
+import { useEffect, useState } from "react";
+
+const invoices = [
+  {
+    invoice: "INV001",
+    paymentStatus: "Paid",
+    totalAmount: "$250.00",
+    paymentMethod: "Credit Card",
+  },
+  {
+    invoice: "INV002",
+    paymentStatus: "Pending",
+    totalAmount: "$150.00",
+    paymentMethod: "PayPal",
+  },
+  {
+    invoice: "INV003",
+    paymentStatus: "Unpaid",
+    totalAmount: "$350.00",
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    invoice: "INV004",
+    paymentStatus: "Paid",
+    totalAmount: "$450.00",
+    paymentMethod: "Credit Card",
+  },
+  {
+    invoice: "INV005",
+    paymentStatus: "Paid",
+    totalAmount: "$550.00",
+    paymentMethod: "PayPal",
+  },
+  {
+    invoice: "INV006",
+    paymentStatus: "Pending",
+    totalAmount: "$200.00",
+    paymentMethod: "Bank Transfer",
+  },
+  {
+    invoice: "INV007",
+    paymentStatus: "Unpaid",
+    totalAmount: "$300.00",
+    paymentMethod: "Credit Card",
+  },
+]
+
 
 function RoomsPage() {
-  const { rooms, loading } = useRooms();
+  const { rooms, loading,fetchRooms} = useRooms();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchByOccupant, setSearchByOccupant] = useState(false);
 
-  const filteredRooms = rooms.filter((room) => {
-    const roomNameMatch = room.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const occupantNameMatch = room.occupant_name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return (
-      (searchByOccupant && room.status === "occupied" && occupantNameMatch) ||
-      (!searchByOccupant && roomNameMatch)
-    );
-  });
-
-  const handleDeleteRoom = async (roomId) => {
-    try {
-      const roomRef = doc(db, "rooms", roomId);
-      await deleteDoc(roomRef);
-    } catch (error) {
-      console.error("Error deleting room:", error);
-    }
-  };
-
   if (loading) return <Loader variant="secondary" />;
 
+  useEffect(()=>{fetchRooms()},[])
   return (
-    <div>
-      <div className="flex justify-between items-center">
-        <h3 className="text-base font-semibold leading-6 text-gray-900">
-          Rooms
+  <div className=" w-full">
+    <div className=" w-full flex justify-between">
+    <h3 className="text-base font-semibold leading-6 text-gray-900 mb-4">
+      Rooms
         </h3>
-        <Link to={`/rooms/new`}>
-          <Button>Add Room</Button>
-        </Link>
-      </div>
-      <div className="my-4 flex justify-between items-center">
-        <Input
-          type="text"
-          placeholder="Search for a room or occupant"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="mr-2 w-3/4"
-        />
-        <label className="flex items-center gap-2 w-1/4">
-          <Checkbox
-            type="checkbox"
-            checked={searchByOccupant}
-            onCheckedChange={() => setSearchByOccupant(!searchByOccupant)}
-          />
-          <p>Search by Occupant</p>
-        </label>
-      </div>
-      <div>
-        {filteredRooms.length === 0 ? (
-          <p className="text-center text-gray-500">Room not found</p>
-        ) : (
-          <Table>
-            <TableCaption>A list of your rooms.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="table-cell">ID</TableHead>
-                <TableHead className="table-cell">Name</TableHead>
-                <TableHead className="table-cell">Status</TableHead>
-                <TableHead className="table-cell">Occupant Name</TableHead>
-                <TableHead className="table-cell">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRooms.map((room) => (
-                <TableRow key={room.id}>
-                  <TableCell className="table-cell">{room.id}</TableCell>
-                  <TableCell className="table-cell">{room.name}</TableCell>
-                  <TableCell className="table-cell">
-                    {room.status === "empty" ? "Empty" : "Occupied"}
-                  </TableCell>
-                  <TableCell className="table-cell">
-                    {room.occupant_name === "" ? "None" : room.occupant_name}
-                  </TableCell>
-                  <TableCell className="table-cell">
-                    <div className="flex items-center gap-2">
-                      <Link to={`/rooms/${room.id}`}>
-                        <EyeIcon />
-                      </Link>
-                      <Button
-                        onClick={() => handleDeleteRoom(room.id)}
-                        variant="danger"
-                      >
-                        <TrashIcon />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </div>
+  <AssignRoom/>
     </div>
+    <Table>
+      <TableCaption>List of Rooms.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Rooms</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Assigned to</TableHead>
+          <TableHead className="text-right">Edit</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rooms.map((item) => (
+          <TableRow key={item.RoomId}>
+            <TableCell className="font-medium">{item.RoomNum}</TableCell>
+            <TableCell>{item.isAssigned? (        <span className="inline-flex items-center gap-x-1.5 rounded-md bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+        <svg viewBox="0 0 6 6" aria-hidden="true" className="h-1.5 w-1.5 fill-yellow-500">
+          <circle r={3} cx={3} cy={3} />
+        </svg>
+    Occupied
+      </span>):(   <span className="inline-flex items-center gap-x-1.5 rounded-md bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700">
+        <svg viewBox="0 0 6 6" aria-hidden="true" className="h-1.5 w-1.5 fill-blue-500">
+          <circle r={3} cx={3} cy={3} />
+        </svg>
+  Available
+      </span>)}</TableCell>
+            <TableCell>{item?.isAssignedTo ? (<p className=" font-semibold text-base">{item?.isAssignedTo}</p>): <p className=" text-xs">Not Assigned</p>}</TableCell>
+            <TableCell className="text-right">{item.isAssigned ? (<EditRoom data={item}/>):"No Action"}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+      <TableFooter>
+        <TableRow>
+          <TableCell colSpan={3}>Total</TableCell>
+          <TableCell className="text-right">$2,500.00</TableCell>
+        </TableRow>
+      </TableFooter>
+    </Table>
+  </div>
   );
 }
 
 export default RoomsPage;
+
+

@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/loader";
-import { auth } from "@/lib/firebase";
+import { auth, userRef } from "@/lib/firebase";
 import normalizeFirebaseErrorMessage from "@/utils/firebase-errors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { getDocs, query, where } from "firebase/firestore";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -36,11 +37,15 @@ function SignInForm() {
     setIsSubmittingForm(true);
     setError("");
     try {
+      const q = query(userRef,where("role","==","admin"))
+      const querySnapShot= await getDocs(q)
+      if(!querySnapShot.empty)
       await signInWithEmailAndPassword(auth, data.email, data.password);
+
       navigate("/");
     } catch (error) {
       console.log(error)
-      const friendlyMessage = normalizeFirebaseErrorMessage(error.code);
+      const friendlyMessage = normalizeFirebaseErrorMessage(error.code) 
       setError(friendlyMessage);
     } finally {
       setIsSubmittingForm(false);

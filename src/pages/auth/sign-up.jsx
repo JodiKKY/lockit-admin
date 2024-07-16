@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/loader";
-import { auth, db } from "@/lib/firebase";
+import { auth, db, userRef } from "@/lib/firebase";
 import normalizeFirebaseErrorMessage from "@/utils/firebase-errors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
@@ -54,13 +54,14 @@ function SignUpForm() {
         displayName: data.displayName,
       });
 
-      const usersRef = collection(db, "users");
 
-      await addDoc(usersRef, {
+      await addDoc(userRef, {
         name: data.displayName,
         email: data.email,
         role:"admin",
         uid: userCredential.user.uid,
+        hotelCapacity:20,
+        bookedRooms:0
       });
 
       navigate("/sign-in");
