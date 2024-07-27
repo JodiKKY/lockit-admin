@@ -28,11 +28,12 @@ import {
   doc,
   updateDoc,
   increment,
-  FieldValue,
 } from "firebase/firestore";
-import { userRef, RoomRef, db } from "@/lib/firebase";
+import { ref, set } from "firebase/database"; // Import RTDB functions
+import { userRef, RoomRef, db, rtdb } from "@/lib/firebase"; // Import RTDB instance
 
 import toast from "react-hot-toast";
+
 export function AssignRoom() {
   const { rooms, fetchRooms } = useRooms();
   console.log("here", rooms);
@@ -75,6 +76,16 @@ export function AssignRoom() {
         roomNumber: data.room.RoomNum,
         roomId: data.room.RoomId,
       });
+
+      // Update RTDB with the assigned room details
+      const roomAssignmentRef = ref(rtdb, `roomAssignments/${data.room.RoomId}`);
+      await set(roomAssignmentRef, {
+        roomNumber: data.room.RoomNum,
+        roomId: data.room.RoomId,
+        assignedTo: data.guest.name,
+        guestId: data.guest.userId,
+      });
+
       toast.success("Room and User updated successfully");
     } catch (error) {
       console.log("Error updating room:", error);
